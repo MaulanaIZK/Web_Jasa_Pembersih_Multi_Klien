@@ -12,5 +12,6 @@ PortalRoutes::client(function (): void {
         Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
         Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
         Route::post('/{service}/toggle', [ServiceController::class, 'toggleStatus'])->name('toggle');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
     });
 });

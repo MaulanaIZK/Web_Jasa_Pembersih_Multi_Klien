@@ -45,7 +45,7 @@ class AuthController extends Controller
             // Pengalihan berdasarkan role pengguna
             return match ($user->role) {
                 'admin' => redirect()->intended(route('admin.clients.index')),
-                'client' => redirect()->intended(route('client.services.index')),
+                'client' => redirect()->intended(route('client.services.index', ['client' => $user->client->id])),
                 default => redirect()->intended(route('customer.services.index')),
             };
         }
@@ -131,7 +131,8 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('client.services.index')->with('success', 'Registrasi penyedia jasa berhasil!');
+        return redirect()->route('client.services.index', ['client' => $user->client->id])
+            ->with('success', 'Registrasi penyedia jasa berhasil!');
     }
 
     public function logout(Request $request): RedirectResponse

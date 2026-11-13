@@ -3,13 +3,18 @@
 namespace App\Modules\Catalog\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\Service;
+use App\Modules\Catalog\Http\Requests\ServiceRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
+    use AuthorizesRequests;
+
     // Untuk Portal Pelanggan (Customer)
     public function publicIndex(Request $request): View
     {
@@ -29,68 +34,87 @@ class ServiceController extends Controller
     }
 
     // Untuk Portal Client (Penyedia Jasa)
-    public function index(Request $request): View
+    public function index(Client $client): View
     {
-        $client = $request->user()?->client;
-        $services = $client ? $client->services()->latest()->get() : collect();
+        $this->authorize('viewAny', Service::class);
+        
+        $services = $client->services()->latest()->get();
 
-        return view('catalog::client.index', compact('services'));
+        return view('catalog::client.index', compact('client', 'services'));
     }
 
-    public function create(): View
+    public function create(Client $client): View
     {
-        return view('catalog::client.create');
+        $this->authorize('create', Service::class);
+       
+        return view('catalog::client.create', compact('client'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ServiceRequest $request, Client $client): RedirectResponse
     {
-        $client = $request->user()?->client;
+        $this->authorize('create', Service::class);
 
-        if (! $client) {
-            return back()->withErrors(['error' => 'Profil Klien tidak ditemukan.']);
-        }
+        $client->services()->create($request->validated() + ['is_active' => true]);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'category' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string'],
-            'base_price' => ['required', 'numeric', 'min:0'],
-        ]);
+        return redirect()->route('client.services.index')
+            ->with('success', 'Layanan berhasil ditambahkan!');
 
-        $client->services()->create([
-            'name' => $validated['name'],
-            'category' => $validated['category'],
-            'description' => $validated['description'],
-            'base_price' => (int) $validated['base_price'],
-            'is_active' => true,
-        ]);
+        // $validated = $request->validate([
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'category' => ['required', 'string', 'max:100'],
+        //     'description' => ['required', 'string'],
+        //     'base_price' => ['required', 'numeric', 'min:0'],
+        // ]);
 
-        return redirect()->route('client.services.index')->with('success', 'Layanan berhasil ditambahkan!');
+        // $client->services()->create([
+        //     'name' => $validated['name'],
+        //     'category' => $validated['category'],
+        //     'description' => $validated['description'],
+        //     'base_price' => (int) $validated['base_price'],
+        //     'is_active' => true,
+        // ]);
     }
 
-    public function edit(Service $service): View
+    public function edit(Client $client, Service $service): View
     {
-        return view('catalog::client.edit', compact('service'));
+        $this->authorize('update', $service);
+
+        return view('catalog::client.edit', compact('client', 'service'));
     }
 
-    public function update(Request $request, Service $service): RedirectResponse
+    public function update(ServiceRequest $request, Client $client, Service $service): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'category' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string'],
-            'base_price' => ['required', 'numeric', 'min:0'],
-        ]);
+        $this->authorize('update', $service);
 
-        $service->update($validated);
+        // $validated = $request->validate([
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'category' => ['required', 'string', 'max:100'],
+        //     'description' => ['required', 'string'],
+        //     'base_price' => ['required', 'numeric', 'min:0'],
+        // ]);
 
-        return redirect()->route('client.services.index')->with('success', 'Layanan berhasil diperbarui!');
+        $service->update($request->validated());
+
+        return redirect()->route('client.services.index')
+            ->with('success', 'Layanan berhasil diperbarui!');
     }
 
-    public function toggleStatus(Service $service): RedirectResponse
+    public function toggleStatus(Client $client, Service $service): RedirectResponse
     {
+        $this->authorize('update', $service);
+
         $service->update(['is_active' => ! $service->is_active]);
 
         return back()->with('success', 'Status layanan berhasil diubah!');
+    }
+
+    public function destroy(Client $client, Service $service): RedirectResponse
+    {
+        $this->authorize('delete', $service);
+
+        $service->delete();
+
+        return redirect()->route('client.services.index')
+            ->with('success', 'Layanan berhasil dihapus!');
     }
 }

@@ -23,9 +23,10 @@ final class PortalRoutes
      */
     public static function client(Closure|string $routes): void
     {
-        Route::middleware(['web', 'auth', 'verified', 'role:client'])
+        Route::middleware(['web', 'auth', 'verified', 'role:client', 'client.context'])
             ->prefix('client/{client}')
             ->name('client.')
+            ->scopeBindings()
             ->group($routes);
     }
 

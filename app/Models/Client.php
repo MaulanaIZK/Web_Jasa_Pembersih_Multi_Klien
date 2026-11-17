@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Client extends Model
 {
     use HasFactory;
 
+    protected $table = 'clients';
+    protected $primaryKey = 'idClient';
+
     protected $fillable = [
+<<<<<<< HEAD
         'user_id',
         'name',
         'slug',
@@ -25,17 +27,25 @@ class Client extends Model
         'description',
         'avatar_path',
         'service_area',
+=======
+        'namaPebisnis',
+        'namaClient',
+        'email',
+        'noTelepon',
+        'alamat',
+        'layanan',
+        'deskripsi',
+>>>>>>> 0fe7a3d (dashbord dan landscape)
         'status',
+        'fotoProfil',
+        'tglNonAktif',
+        'alasaNonaktif',
+        'idAdmin',
     ];
 
-    public function user(): BelongsTo
+    public function isActive(): bool
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function services(): HasMany
-    {
-        return $this->hasMany(Service::class);
+        return strtolower((string) $this->status) === 'aktif' || strtolower((string) $this->status) === 'active';
     }
 
     /** URL foto profil, atau null bila belum ada foto. */

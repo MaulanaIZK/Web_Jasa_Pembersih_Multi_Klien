@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Route;
 
 final class PortalRoutes
 {
-    /**
-     * Portal Pelanggan (Publik)
-     */
+    public static function web(Closure|string $routes): void
+    {
+        Route::middleware('web')->group($routes);
+    }
+
     public static function customer(Closure|string $routes): void
     {
         Route::middleware('web')
@@ -18,21 +20,20 @@ final class PortalRoutes
             ->group($routes);
     }
 
-    /**
-     * Portal Client / Penyedia Jasa Pembersih (Internal)
-     */
     public static function client(Closure|string $routes): void
     {
-        Route::middleware(['web', 'auth', 'verified', 'role:client', 'client.context'])
-            ->prefix('client/{client}')
+        Route::middleware(['web', 'auth', 'verified'])
+            ->prefix('client')
             ->name('client.')
-            ->scopeBindings()
             ->group($routes);
     }
 
-    /**
-     * Portal Admin Platform (Internal)
-     */
+    // Alias untuk kompatibilitas kode tenant
+    public static function tenant(Closure|string $routes): void
+    {
+        self::client($routes);
+    }
+
     public static function admin(Closure|string $routes): void
     {
         Route::middleware(['web', 'auth', 'verified', 'role:admin'])

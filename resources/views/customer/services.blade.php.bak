@@ -1,0 +1,60 @@
+<x-layouts.customer title="Katalog Layanan Pembersih">
+    <div class="space-y-6">
+        <!-- Banner Header -->
+        <div class="bg-gradient-to-r from-sky-500 to-blue-600 rounded-2xl p-6 text-white shadow-sm">
+            <h1 class="text-2xl font-extrabold">Jasa Pembersih Profesional</h1>
+            <p class="text-sky-100 text-sm mt-1">Pesan pembersihan rumah, kantor, dan perabot dengan mitra terpercaya.</p>
+        </div>
+
+        <!-- Filter Kategori Jasa -->
+        <div class="flex gap-2 overflow-x-auto pb-2 text-xs font-semibold">
+            <button class="bg-sky-500 text-white px-4 py-2 rounded-full whitespace-nowrap">Semua Layanan</button>
+            <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-50">Home Cleaning</button>
+            <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-50">Deep Cleaning</button>
+            <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full whitespace-nowrap hover:bg-gray-50">Cuci AC & Perabot</button>
+        </div>
+
+        <!-- Kartu Layanan Kebersihan -->
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Paket 1 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-900 text-base">Pembersihan Rumah Standar</h3>
+                        <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">Mitra CleanExpress</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Saput, pel, lap debu meja & pembersihan kamar mandi utama.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Mulai dari</span>
+                        <span class="font-extrabold text-sky-600 text-base">Rp 150.000</span>
+                    </div>
+                    <button class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
+                        Pesan Layanan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Paket 2 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-900 text-base">Deep Cleaning & Disinfeksi</h3>
+                        <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">Mitra ProClean ID</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Pembersihan menyeluruh kerak kamar mandi, dapur, & penyemprotan disinfektan.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Mulai dari</span>
+                        <span class="font-extrabold text-sky-600 text-base">Rp 350.000</span>
+                    </div>
+                    <button class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
+                        Pesan Layanan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-layouts.customer>

@@ -1,0 +1,77 @@
+<x-layouts.admin title="Dasbor Admin Platform">
+  <div class="space-y-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Selamat datang, Administrator CleanerShip 👋</h1>
+      <p class="text-sm text-gray-500 mt-1">Berikut adalah ringkasan performa platform dan transaksi mitra hari ini.</p>
+    </div>
+
+    {{-- Kartu statistik --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Total Mitra Klien</p>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['total_clients'] ?? 0 }} Mitra</p>
+        <p class="mt-2 text-sm text-green-600">● {{ $stats['active_clients'] ?? 0 }} Aktif Beroperasi</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Total Transaksi Platform</p>
+        <p class="mt-2 text-3xl font-bold text-blue-600">Rp {{ number_format($stats['total_revenue'] ?? 0, 0, ',', '.') }}</p>
+        <p class="mt-2 text-sm text-gray-500">Bulan ini</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Komisi Platform (10%)</p>
+        <p class="mt-2 text-3xl font-bold text-emerald-600">Rp {{ number_format($stats['platform_commission'] ?? 0, 0, ',', '.') }}</p>
+        <p class="mt-2 text-sm text-emerald-600">Terverifikasi ledger</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Pending Payouts</p>
+        <p class="mt-2 text-3xl font-bold text-amber-500">3 Mitra</p>
+        <p class="mt-2 text-sm text-amber-600">Menunggu verifikasi bank</p>
+      </div>
+    </div>
+
+    {{-- Tabel mitra --}}
+    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h2 class="text-lg font-semibold text-gray-800">Mitra Penyedia Jasa Terbaru</h2>
+        <a href="{{ route('admin.clients.index') }}" class="text-sm font-medium text-blue-600 hover:underline">Kelola semua mitra →</a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500 border-b">
+            <tr>
+              <th class="px-6 py-3">Nama Client</th>
+              <th class="px-6 py-3">Nama Bisnis</th>
+              <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            @forelse ($recentClients as $client)
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 font-semibold text-gray-900">{{ $client->namaClient }}</td>
+                <td class="px-6 py-4 text-gray-600">{{ $client->namaPebisnis }}</td>
+                <td class="px-6 py-4">
+                  <span class="px-2.5 py-0.5 text-xs font-bold rounded-full {{ strtolower($client->status) === 'aktif' || strtolower($client->status) === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                    {{ strtoupper($client->status ?? 'AKTIF') }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <a href="{{ route('admin.clients.edit', $client->idClient) }}" class="text-blue-600 font-bold hover:underline">Detail</a>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="4" class="px-6 py-10 text-center text-gray-400">
+                  Belum ada data mitra terdaftar.
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</x-layouts.admin>

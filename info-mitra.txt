@@ -1,0 +1,1247 @@
+﻿=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Http\Middleware\SetClientContext.php
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Models\Client;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\Response;
+
+final class SetClientContext
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $own = $request->user()?->client;
+        abort_if($own === null, 403, 'Profil Client tidak ditemukan.');
+
+        // {client} di URL bisa berupa model (sudah di-bind) atau teks id
+        $param = $request->route('client');
+        $urlId = $param instanceof Client ? (int) $param->getKey() : (int) $param;
+
+        abort_if($urlId !== (int) $own->id, 403, 'Anda tidak berhak mengakses data Client lain.');
+
+        // Supaya route('client.xxx') tanpa parameter otomatis terisi
+        URL::defaults(['client' => $own->id]);
+
+        return $next($request);
+    }
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Models\Client.php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Client extends Model
+{
+    use HasFactory;
+
+    protected $table = 'clients';
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'slug',
+        'phone',
+        'ktp_number',
+        'face_verification_url',
+        'business_name',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_holder',
+        'description',
+        'service_area',
+        'status',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
+    }
+
+    public function isActive(): bool
+    {
+        return in_array(strtolower((string) $this->status), ['active', 'aktif', 'verified'], true);
+    }
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Models\Client.php.bak
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Client extends Model
+{
+    use HasFactory;
+
+    protected $table = 'clients';
+    protected $primaryKey = 'idClient';
+
+    protected $fillable = [
+        'namaPebisnis',
+        'namaClient',
+        'email',
+        'noTelepon',
+        'alamat',
+        'layanan',
+        'deskripsi',
+        'status',
+        'fotoProfil',
+        'tglNonAktif',
+        'alasaNonaktif',
+        'idAdmin',
+    ];
+
+    public function isActive(): bool
+    {
+        return strtolower((string) $this->status) === 'aktif' || strtolower((string) $this->status) === 'active';
+    }
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Models\ClientOrder.php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ClientOrder extends Model
+{
+    //
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Admin\Http\Controllers\AdminClientController.php
+<?php
+
+namespace App\Modules\Admin\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Client;
+use Illuminate\Http\Request;
+
+class AdminClientController extends Controller
+{
+    public function index()
+    {
+        $clients = Client::latest('created_at')->get();
+        return view('admin::clients.index', compact('clients'));
+    }
+
+    public function edit($idClient)
+    {
+        $client = Client::findOrFail($idClient);
+        return view('admin::clients.edit', compact('client'));
+    }
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Auth\resources\views\customer-register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Auth\resources\views\register-client.blade.php
+<x-layouts.customer title="Daftar Mitra Penyedia Jasa - Pembersih.id">
+    <div class="max-w-lg mx-auto my-8 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+        <!-- Tab Navigasi Atas -->
+        <div class="flex border-b border-gray-200 mb-6 text-sm font-medium text-center">
+            <a href="{{ route('login') }}" class="w-1/3 pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700">Masuk</a>
+            <a href="{{ route('register') }}" class="w-1/3 pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700">Pelanggan</a>
+            <span class="w-1/3 pb-3 border-b-2 border-blue-600 text-blue-600 font-bold">Mitra Klien</span>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mb-2 text-center">Pendaftaran Mitra Klien</h2>
+        <p class="text-sm text-gray-600 mb-6 text-center">Bergabunglah sebagai penyedia jasa pembersih profesional</p>
+
+        @if ($errors->any())
+            <div class="mb-4 bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-sm">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
+        <form action="{{ route('register.client') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik / Penanggung Jawab</label>
+                <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Usaha / Brand Pembersih</label>
+                <input type="text" name="business_name" value="{{ old('business_name') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Usaha</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">No. HP / WhatsApp</label>
+                    <input type="text" name="phone" value="{{ old('phone') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cakupan Wilayah Layanan</label>
+                <input type="text" name="service_area" value="{{ old('service_area') }}" placeholder="Contoh: Jakarta Selatan, Depok" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bank</label>
+                    <input type="text" name="bank_name" placeholder="BCA / Mandiri" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">No. Rekening</label>
+                    <input type="text" name="bank_account_number" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
+                <input type="text" name="bank_account_holder" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
+                <input type="password" name="password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">Daftarkan Mitra Klien</button>
+        </form>
+
+        <!-- Tombol Alih Halaman Bawah -->
+        <div class="mt-6 pt-6 border-t border-gray-100 text-center space-y-3">
+            <p class="text-sm text-gray-600">Sudah punya akun mitra atau mendaftar sebagai pelanggan?</p>
+            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                <a href="{{ route('login') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition">
+                    Sudah Punya Akun (Masuk)
+                </a>
+                <a href="{{ route('register') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition">
+                    Daftar Sebagai Pelanggan
+                </a>
+            </div>
+        </div>
+    </div>
+</x-layouts.customer>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Auth\resources\views\register-customer.blade.php
+<x-layouts.customer title="Daftar Pelanggan - Pembersih.id">
+    <div class="max-w-md mx-auto my-8 bg-white p-8 rounded-xl shadow-md border border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2 text-center">Pendaftaran Pelanggan</h2>
+        <p class="text-sm text-gray-500 mb-6 text-center">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="mb-4 bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-sm">
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon / WA</label>
+                <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="08xxxxxxxxxx" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Domisili (Opsional)</label>
+                <textarea name="address" rows="2" placeholder="Jl. Raya Kebersihan No. 12" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('address') }}</textarea>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-sm font-medium text-gray-700">Kata Sandi</label>
+                    <span class="text-xs text-gray-500 font-normal">Minimal 8 karakter</span>
+                </div>
+                <input type="password" name="password" required placeholder="Minimal 8 karakter" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required placeholder="Ulangi kata sandi" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- TOMBOL DAFTAR UTAMA -->
+            <div class="pt-2 text-center">
+                <button type="submit" 
+                        style="background-color: #2563eb; color: #ffffff; width: 100%; padding: 10px 16px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer;"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg text-base shadow transition cursor-pointer">
+                    Daftar Pelanggan
+                </button>
+            </div>
+        </form>
+
+        <!-- TAUTAN ALIH KE HALAMAN LOGIN -->
+        <div class="mt-6 pt-6 border-t border-gray-100 text-center space-y-3">
+            <p class="text-sm text-gray-600">Sudah memiliki akun?</p>
+            <a href="{{ route('login') }}" 
+               style="display: block; width: 100%; padding: 8px 16px; border: 1px solid #2563eb; color: #2563eb; border-radius: 8px; text-decoration: none; font-weight: 500; text-align: center;"
+               class="w-full inline-block px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition text-center">
+                Sudah Punya Akun (Masuk)
+            </a>
+        </div>
+    </div>
+</x-layouts.customer>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Auth\resources\views\register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Catalog\routes\client.php
+<?php
+
+use App\Modules\Catalog\Http\Controllers\ServiceController;
+use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
+
+PortalRoutes::client(function (): void {
+    Route::prefix('services')->name('services.')->group(function (): void {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('/create', [ServiceController::class, 'create'])->name('create');
+        Route::post('/', [ServiceController::class, 'store'])->name('store');
+        Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+        Route::post('/{service}/toggle', [ServiceController::class, 'toggleStatus'])->name('toggle');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+    });
+});
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Client\Http\Controllers\ClientDashboardController.php
+<?php
+
+namespace App\Modules\Client\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class ClientDashboardController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $client = $request->user()->client;
+
+        return view('client.dashboard', compact('client'));
+    }
+}
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Ordering\routes\client.php
+<?php
+
+use App\Modules\Ordering\Http\Controllers\OrderController;
+use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
+
+PortalRoutes::client(function (): void {
+    Route::get('/orders', [OrderController::class, 'clientIndex'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'clientShow'])->name('orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+});
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Payments\routes\client.php
+<?php
+
+use App\Modules\Payments\Http\Controllers\PaymentController;
+use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
+
+PortalRoutes::client(function (): void {
+    Route::get('/payments', [PaymentController::class, 'clientIndex'])->name('payments.index');
+    Route::post('/payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+});
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Reporting\routes\client.php
+<?php
+
+use App\Modules\Reporting\Http\Controllers\ReportController;
+use App\Modules\Reporting\Http\Controllers\WithdrawalController;
+use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
+
+PortalRoutes::client(function (): void {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+
+    Route::get('/withdrawals', [WithdrawalController::class, 'index'])->name('withdrawals.index');
+    Route::post('/withdrawals', [WithdrawalController::class, 'store'])->name('withdrawals.store');
+});
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\app\Modules\Support\routes\client.php
+<?php
+
+use App\Modules\Support\Http\Controllers\TicketController;
+use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
+
+PortalRoutes::client(function (): void {
+    Route::get('/support', [TicketController::class, 'clientIndex'])->name('support.index');
+    Route::post('/support', [TicketController::class, 'clientStore'])->name('support.store');
+});
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\customer-register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\auth\customer-register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\auth\register.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 3rem 1rem; 
+            color: #334155; 
+        }
+        .auth-card { 
+            background: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 2.25rem 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.875rem; outline: none; background: #ffffff; color: #0f172a; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.95rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> âœ¨</a>
+        <h1 class="auth-title">Pendaftaran Pelanggan</h1>
+        <p class="auth-subtitle">Buat akun untuk mulai memesan layanan pembersih</p>
+
+        @if ($errors->any())
+            <div class="alert-error">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}" required autofocus class="form-input" placeholder="Nama Lengkap Anda">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required class="form-input" placeholder="nama@email.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / WA</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-input" placeholder="08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alamat Domisili (Opsional)</label>
+                <textarea name="address" class="form-textarea" placeholder="Jl. Kebersihan No. 12">{{ old('address') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" required class="form-input" placeholder="Minimal 8 karakter">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" required class="form-input" placeholder="Ulangi kata sandi">
+            </div>
+
+            <button type="submit" class="btn-submit">Daftar Pelanggan</button>
+        </form>
+
+        <div class="auth-footer">
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+        </div>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\components\layouts\client.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title ?? 'Portal Client - Pembersih.id' }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans antialiased flex min-h-screen">
+    <!-- Sidebar Client -->
+    <aside class="w-64 bg-slate-900 text-slate-100 flex flex-col">
+        <div class="h-16 flex items-center px-6 font-bold text-lg border-b border-slate-800">
+            Portal Client
+        </div>
+        <nav class="flex-1 p-4 space-y-1 text-sm">
+            <a href="{{ route('client.services.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Manajemen Jasa</a>
+            <a href="{{ route('client.orders.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Pesanan Masuk</a>
+            <a href="{{ route('client.payments.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Keuangan & Verifikasi</a>
+            <a href="{{ route('client.reports.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Laporan Omset</a>
+        </nav>
+        <div class="p-4 border-t border-slate-800">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full text-left px-3 py-2 text-red-400 hover:bg-slate-800 rounded">Keluar</button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+        <header class="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
+            <h1 class="font-semibold text-lg">{{ $title ?? 'Dashboard' }}</h1>
+            <span class="text-sm text-gray-500">{{ auth()->user()->name ?? 'Client' }}</span>
+        </header>
+        <main class="p-6 flex-1">
+            {{ $slot }}
+        </main>
+    </div>
+</body>
+</html>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\resources\views\pages\auth\register.blade.php
+<x-layouts::auth :title="__('Register')">
+    <div class="flex flex-col gap-6">
+        <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+
+        <!-- Session Status -->
+        <x-auth-session-status class="text-center" :status="session('status')" />
+
+        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+            @csrf
+            <!-- Name -->
+            <flux:input
+                name="name"
+                :label="__('Name')"
+                :value="old('name')"
+                type="text"
+                required
+                autofocus
+                autocomplete="name"
+                :placeholder="__('Full name')"
+            />
+
+            <!-- Email Address -->
+            <flux:input
+                name="email"
+                :label="__('Email address')"
+                :value="old('email')"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="email@example.com"
+            />
+
+            <!-- Password -->
+            <flux:input
+                name="password"
+                :label="__('Password')"
+                type="password"
+                required
+                autocomplete="new-password"
+                :placeholder="__('Password')"
+                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
+                viewable
+            />
+
+            <!-- Confirm Password -->
+            <flux:input
+                name="password_confirmation"
+                :label="__('Confirm password')"
+                type="password"
+                required
+                autocomplete="new-password"
+                :placeholder="__('Confirm password')"
+                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
+                viewable
+            />
+
+            <div class="flex items-center justify-end">
+                <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
+                    {{ __('Create account') }}
+                </flux:button>
+            </div>
+        </form>
+
+        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
+            <span>{{ __('Already have an account?') }}</span>
+            <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+        </div>
+    </div>
+</x-layouts::auth>
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\database\migrations\2026_10_21_021937_client.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('client', function(Blueprint $table): void{
+            $table->id('idClient');
+            $table->string('namaPebisnis');
+            $table->string('namaClient');
+            $table->string('email');
+            $table->string('noTelepon');
+            $table->string('alamat');
+            $table->enum('layanan',['bangunan','ruangan','kendaraan','other']);
+            $table->string('deskripsi');
+            $table->enum('status',['aktif','tidak aktif','libur']);
+            $table->string('fotoProfil');
+            $table->date('tglNonAktif');
+            $table->string('alasaNonaktif');
+            $table->timestamps();
+            $table->bigInteger('idAdmin')->unsigned();
+            $table->foreign('idAdmin')->references('idAdmin')->on('admin');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('client');
+    }
+};
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\database\migrations\2026_11_09_085225_create_clients_table.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('clients', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('phone');
+            $table->string('ktp_number')->nullable();
+            $table->string('face_verification_url')->nullable();
+            $table->string('business_name');
+            $table->string('bank_name');
+            $table->string('bank_account_number');
+            $table->string('bank_account_holder');
+            $table->text('description')->nullable();
+            $table->string('service_area');
+            $table->enum('status', ['pending', 'active', 'suspended'])->default('pending');
+            $table->timestamps();
+
+            $table->index(['status', 'created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('clients');
+    }
+};
+=== C:\ServBay\www\servbay\Web_Jasa_Pembersih_Multi_Klien\database\migrations\2026_11_09_085230_create_client_orders_table.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('client_orders', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained();
+            $table->enum('status', ['menunggu_konfirmasi', 'dikonfirmasi', 'selesai', 'dibatalkan'])->default('menunggu_konfirmasi');
+            $table->text('notes')->nullable();
+            $table->bigInteger('subtotal');
+            $table->timestamps();
+
+            $table->index(['client_id', 'status', 'created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('client_orders');
+    }
+};
+=== routes\web.php
+<?php
+
+use App\Http\Controllers\DashboardRedirectController;
+use App\Modules\Admin\Http\Controllers\AdminDashboardController;
+use App\Modules\Client\Http\Controllers\ClientDashboardController;
+use App\Modules\Auth\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showCustomerRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'registerCustomer']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.dashboard');
+
+Route::get('/client/dashboard', [ClientDashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('client.dashboard');
+
+Route::get('/dashboard', DashboardRedirectController::class)
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+  GET|HEAD   admin/audit-logs admin.audit-logs.index ΓÇ║ App\Modules\Reporting\Http\Controllers\ReportController@aΓÇª
+  GET|HEAD   admin/clients admin.clients.index ΓÇ║ App\Modules\Governance\Http\Controllers\GovernanceController@inΓÇª
+  POST       admin/clients/{client}/toggle-status admin.clients.toggle-status ΓÇ║ App\Modules\Governance\Http\ContΓÇª
+  POST       admin/clients/{client}/verify admin.clients.verify ΓÇ║ App\Modules\Governance\Http\Controllers\GovernΓÇª
+  GET|HEAD   admin/commissions admin.commissions.index ΓÇ║ App\Modules\Governance\Http\Controllers\CommissionContrΓÇª
+  POST       admin/commissions admin.commissions.store ΓÇ║ App\Modules\Governance\Http\Controllers\CommissionContrΓÇª
+  GET|HEAD   admin/dashboard admin.dashboard ΓÇ║ App\Modules\Admin\Http\Controllers\AdminDashboardController@index
+  GET|HEAD   admin/reports/platform admin.reports.platform ΓÇ║ App\Modules\Reporting\Http\Controllers\ReportControΓÇª
+  GET|HEAD   admin/tickets admin.tickets.index ΓÇ║ App\Modules\Support\Http\Controllers\TicketController@adminIndex
+  POST       admin/tickets/{ticket}/reply admin.tickets.reply ΓÇ║ App\Modules\Support\Http\Controllers\TicketContrΓÇª
+
+                                                                                              Showing [10] routes
+

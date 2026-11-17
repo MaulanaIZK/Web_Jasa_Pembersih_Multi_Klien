@@ -1,33 +1,32 @@
+@props(['title' => 'Pelanggan'])
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Pembersih.id - Layanan Jasa Kebersihan' }}</title>
-    <script src="[suspicious link removed]"></script>
+    <title>{{ $title }} - CleanerShip</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="/" class="font-bold text-xl text-blue-600">Pembersih.id</a>
-            <nav class="flex items-center gap-4 text-sm font-medium">
-                <a href="{{ route('customer.services.index') }}" class="hover:text-blue-600">Layanan</a>
+<body class="min-h-screen bg-gray-50 text-gray-800 font-sans flex flex-col">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+            <a href="/" class="text-xl font-extrabold text-sky-500">Cleaner<span class="text-gray-900">Ship</span></a>
+            <div class="flex items-center gap-4">
                 @auth
-                    <a href="{{ route('customer.orders.index') }}" class="hover:text-blue-600">Pesanan Saya</a>
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-red-600 hover:underline">Keluar</button>
-                    </form>
+                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-700">{{ auth()->user()->name ?? 'Akun Saya' }}</a>
+                    @if (Route::has('logout'))
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="text-sm font-bold text-white bg-sky-500 px-4 py-2 rounded-lg">Keluar</button>
+                        </form>
+                    @endif
                 @else
-                    <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Masuk</a>
-                    <a href="{{ route('register') }}" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">Daftar</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700">Masuk</a>
+                    <a href="{{ route('register') }}" class="text-sm font-bold text-white bg-sky-500 px-4 py-2 rounded-lg">Daftar</a>
                 @endauth
-            </nav>
-        </div>
+            </div></div>
     </header>
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-8 py-8">
         {{ $slot }}
     </main>
 </body>

@@ -1,0 +1,12 @@
+<x-layouts.admin title="Tata Kelola & Governance Platform">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Tata Kelola &amp; Governance Platform 👋</h1>
+      <p class="text-sm text-gray-500 mt-1">Manajemen kebijakan, audit log, dan regulasi platform CleanerShip.</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-gray-800 mb-2">Modul Governance Active</h2>
+      <p class="text-gray-600 text-sm">Halaman tata kelola platform berhasil dimuat.</p>
+    </div>
+  </div>
+</x-layouts.admin>

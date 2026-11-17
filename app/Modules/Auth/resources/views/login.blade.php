@@ -1,52 +1,63 @@
-<x-layouts.customer title="Masuk - Pembersih.id">
-    <div class="max-w-md mx-auto my-12 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Masuk ke Akun Anda</h2>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk Akun - CleanerShip</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f172a; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; color: #334155; }
+        .auth-card { background: #ffffff; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 10px 10px -5px rgba(0,0,0,0.2); width: 100%; max-width: 420px; padding: 2.5rem 2rem; }
+        .auth-logo { font-size: 1.75rem; font-weight: 900; color: #0284c7; text-align: center; text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .auth-logo span { color: #0f172a; }
+        .auth-title { text-align: center; font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+        .auth-subtitle { text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.35rem; }
+        .form-input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: #ffffff; color: #0f172a; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+        .btn-submit { width: 100%; background: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.9rem; padding: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; display: block; text-align: center; text-decoration: none; }
+        .btn-submit:hover { background: #0369a1; }
+        .auth-footer { text-align: center; font-size: 0.85rem; color: #64748b; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
+        .auth-footer a { color: #0284c7; font-weight: 700; text-decoration: none; }
+        .auth-footer a:hover { text-decoration: underline; }
+        .alert-error { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <a href="/" class="auth-logo">Cleaner<span>Ship</span> ✨</a>
+        <h1 class="auth-title">Selamat Datang Kembali</h1>
+        <p class="auth-subtitle">Masukkan kredensial akun Anda untuk masuk</p>
 
         @if ($errors->any())
-            <div class="mb-4 bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-sm">
+            <div class="alert-error">
                 {{ $errors->first() }}
             </div>
         @endif
 
-        <form action="{{ route('login') }}" method="POST" class="space-y-4">
+        <form action="{{ route('login') }}" method="POST">
             @csrf
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email') }}" required autofocus class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="form-group">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus class="form-input" placeholder="nama@email.com">
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
-                <input type="password" name="password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <label class="form-label" style="margin-bottom: 0;">Kata Sandi</label>
+                    <a href="#" style="font-size: 0.75rem; color: #0284c7; text-decoration: none; font-weight: 600;">Lupa password?</a>
+                </div>
+                <input type="password" name="password" required class="form-input" placeholder="••••••••">
             </div>
 
-            <div class="flex items-center justify-between text-sm mb-2">
-                <label class="flex items-center gap-2 text-gray-600">
-                    <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600"> Ingat Saya
-                </label>
-            </div>
-
-            <!-- TOMBOL MASUK UTAMA -->
-            <div class="pt-2 text-center">
-                <button type="submit" 
-                        style="background-color: #2563eb; color: #ffffff; width: 100%; padding: 10px 16px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer;"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg text-base shadow transition cursor-pointer">
-                    Masuk
-                </button>
-            </div>
+            <button type="submit" class="btn-submit">Masuk ke Dasbor</button>
         </form>
 
-        <!-- TAUTAN ALIH KE PENDAFTARAN -->
-        <div class="mt-6 pt-6 border-t border-gray-100 text-center space-y-3">
-            <p class="text-sm text-gray-600">Belum memiliki akun pelanggan?</p>
-            <a href="{{ route('register') }}" 
-               style="display: block; width: 100%; padding: 8px 16px; border: 1px solid #2563eb; color: #2563eb; border-radius: 8px; text-decoration: none; font-weight: 500; text-align: center;"
-               class="w-full inline-block px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition text-center">
-                Daftar Akun Pelanggan
-            </a>
-            <p class="text-xs text-gray-400 mt-2">
-                *Pendaftaran Klien / Penyedia Jasa dilakukan secara manual oleh Admin Platform.
-            </p>
+        <div class="auth-footer">
+            Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
         </div>
     </div>
-</x-layouts.customer>
+</body>
+</html>

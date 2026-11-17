@@ -11,6 +11,8 @@ class Client extends Model
 {
     use HasFactory;
 
+    protected $table = 'clients';
+
     protected $fillable = [
         'user_id',
         'name',
@@ -35,5 +37,10 @@ class Client extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
+    }
+
+    public function isActive(): bool
+    {
+        return in_array(strtolower((string) $this->status), ['active', 'aktif', 'verified'], true);
     }
 }

@@ -18,10 +18,37 @@ class ServiceController extends Controller
     // Untuk Portal Pelanggan (Customer)
     public function publicIndex(Request $request): View
     {
-        $services = Service::where('is_active', true)
+        $query = Service::query()
+            ->where('is_active', true)
             ->with('client')
-            ->latest()
-            ->get();
+            ->when($request->filled('q'), function ($q) use ($request) {
+                $kata = '%'.$request->input('q').'%';
+                $q->where(fn ($w) => $w->where('name', 'like', $kata)->orWhere('description', 'like', $kata));
+            })
+            ->when($request->filled('kategori'), fn ($q) => $q->where('category', $request->input('kategori')))
+            ->when($request->filled('harga'), function ($q) use ($request) {
+                $q->where(function ($w) use ($request) {
+                    foreach ((array) $request->input('harga') as $range) {
+                        [$min, $max] = array_pad(explode('-', (string) $range), 2, '');
+                        $w->orWhere(function ($r) use ($min, $max) {
+                            if ($min !== '') {
+                                $r->where('base_price', '>=', (int) $min);
+                            }
+                            if ($max !== '') {
+                                $r->where('base_price', '<', (int) $max);
+                            }
+                        });
+                    }
+                });
+            });
+
+        match ($request->input('urutan')) {
+            'termurah' => $query->orderBy('base_price'),
+            'termahal' => $query->orderByDesc('base_price'),
+            default => $query->latest(),
+        };
+
+        $services = $query->get();
 
         return view('catalog::customer.index', compact('services'));
     }

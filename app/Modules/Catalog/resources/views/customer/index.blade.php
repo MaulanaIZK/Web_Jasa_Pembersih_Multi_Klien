@@ -1,36 +1,102 @@
 <x-layouts.customer title="Katalog Layanan - Pembersih.id">
-    <div class="mb-8 text-center sm:text-left">
-        <h1 class="text-3xl font-bold text-gray-900">Katalog Layanan Pembersih</h1>
-        <p class="text-gray-600 mt-2">Pilih jasa pembersih terbaik dari mitra terpercaya kami</p>
-    </div>
+<style>
+  .cs-wrap{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#111}
+  .cs-hero{height:200px;border-radius:12px;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),#444;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 40px;margin-bottom:24px}
+  .cs-hero h1{font-size:42px;font-family:Georgia,serif;font-weight:700}
+  .cs-hero p{font-size:14px;margin-top:4px}
+  .cs-cats{display:flex;justify-content:space-around;padding:20px 0;border-bottom:1px solid #ddd;margin-bottom:24px}
+  .cs-cat{text-align:center;font-weight:600;font-size:14px;color:#111;text-decoration:none}
+  .cs-cat i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px;color:#fff;width:44px;height:44px;margin:0 auto 6px;border-radius:10px;background:#4a7de0}
+  .cs-cat.aktif{color:#1e6fe0;text-decoration:underline}
+  .cs-layout{display:flex;gap:24px;align-items:flex-start}
+  .cs-side{flex:0 0 210px;background:#eef0ff;border-radius:8px;padding:14px}
+  .cs-side h3{font-size:13px;font-weight:700;margin:14px 0 8px}
+  .cs-side h3:first-child{margin-top:0}
+  .cs-side label{display:block;font-size:12px;margin-bottom:6px}
+  .cs-side select,.cs-side input[type=text]{width:100%;padding:6px;font-size:12px;border:1px solid #ccc;border-radius:6px}
+  .cs-main{flex:1;min-width:0}
+  .cs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .cs-top h2{font-size:18px;font-weight:700}
+  .cs-top select{padding:10px 14px;border:1px solid #ccc;border-radius:6px;background:#fff}
+  .cs-card{display:flex;align-items:center;gap:16px;background:#2aa3ff;color:#000;border-radius:12px;padding:12px;margin-bottom:14px}
+  .cs-thumb{width:110px;height:100px;object-fit:cover;border-radius:8px;background:#9cc;flex:none}
+  .cs-info{flex:1;font-size:13px;line-height:1.5}
+  .cs-info b{font-size:15px}
+  .cs-btn{background:#5b21f5;color:#fff;padding:6px 20px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none}
+  .cs-empty{padding:40px;text-align:center;color:#666;background:#fff;border:1px solid #ddd;border-radius:12px}
+  @@media(max-width:768px){.cs-layout{flex-direction:column}.cs-side{flex:none;width:100%}.cs-cats{flex-wrap:wrap;gap:12px}}
+</style>
 
-    @if ($services->isEmpty())
-        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
-            <p class="text-gray-500 font-medium">Belum ada layanan pembersih yang tersedia saat ini.</p>
-        </div>
-    @else
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($services as $service)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
-                    <div class="p-6">
-                        <span class="inline-block px-2.5 py-1 text-xs font-semibold bg-blue-50 text-blue-600 rounded-md mb-3">
-                            {{ $service->category }}
-                        </span>
-                        <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $service->name }}</h3>
-                        <p class="text-sm text-gray-500 mb-4">Mitra: {{ $service->client->business_name ?? 'Mitra Pembersih' }}</p>
-                        <p class="text-gray-600 text-sm line-clamp-3 mb-4">{{ $service->description }}</p>
-                    </div>
-                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                        <div>
-                            <span class="text-xs text-gray-500 block">Mulai dari</span>
-                            <span class="text-lg font-bold text-blue-600">Rp {{ number_format($service->base_price, 0, ',', '.') }}</span>
-                        </div>
-                        <a href="{{ route('customer.services.show', $service->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-                            Detail Jasa
-                        </a>
-                    </div>
-                </div>
+@php
+    $kategoriList = ['Rumah', 'Kantor', 'Mobil', 'Gudang', 'Lainnya'];
+    $ikon = ['Rumah' => '&#127968;', 'Kantor' => '&#127970;', 'Mobil' => '&#128663;', 'Gudang' => '&#128230;', 'Lainnya' => '&#8943;'];
+    $hargaDipilih = (array) request('harga', []);
+@endphp
+
+<div class="cs-wrap">
+<div class="cs-hero">
+    <h1>Semua Layanan</h1>
+    <p>Pilih layanan sesuai dengan kebutuhan Anda.</p>
+</div>
+
+<nav class="cs-cats">
+    @foreach ($kategoriList as $k)
+        <a class="cs-cat {{ request('kategori') === $k ? 'aktif' : '' }}" href="{{ route('customer.services.index', ['kategori' => $k]) }}"><i>{!! $ikon[$k] !!}</i>{{ $k }}</a>
+    @endforeach
+</nav>
+
+<form id="filter-form" method="GET" action="{{ route('customer.services.index') }}"></form>
+
+<div class="cs-layout">
+    <aside class="cs-side">
+        <h3>Cari</h3>
+        <input type="text" name="q" form="filter-form" value="{{ request('q') }}" placeholder="Nama layanan...">
+
+        <h3>Harga</h3>
+        @foreach (['0-100000' => '< Rp 100.000', '100000-200000' => 'Rp 100.000 - Rp 200.000', '200000-500000' => 'Rp 200.000 - Rp 500.000', '500000-' => '> Rp 500.000'] as $val => $label)
+            <label><input type="checkbox" name="harga[]" form="filter-form" value="{{ $val }}" {{ in_array($val, $hargaDipilih) ? 'checked' : '' }} onchange="this.form.submit()"> {{ $label }}</label>
+        @endforeach
+
+        <h3>Kategori</h3>
+        <select name="kategori" form="filter-form" onchange="this.form.submit()">
+            <option value="">Semua Kategori</option>
+            @foreach ($kategoriList as $k)
+                <option value="{{ $k }}" {{ request('kategori') === $k ? 'selected' : '' }}>{{ $k }}</option>
             @endforeach
+        </select>
+    </aside>
+
+    <section class="cs-main">
+        <div class="cs-top">
+            <h2>{{ $services->count() }} Layanan Ditemukan</h2>
+            <select name="urutan" form="filter-form" onchange="this.form.submit()">
+                <option value="">Urutkan: Terbaru</option>
+                <option value="termurah" {{ request('urutan') === 'termurah' ? 'selected' : '' }}>Harga Terendah</option>
+                <option value="termahal" {{ request('urutan') === 'termahal' ? 'selected' : '' }}>Harga Tertinggi</option>
+            </select>
         </div>
-    @endif
+
+        @forelse ($services as $service)
+            <article class="cs-card">
+                @if ($service->image_url)
+                    <img class="cs-thumb" src="{{ \Illuminate\Support\Str::startsWith($service->image_url, ['http://', 'https://']) ? $service->image_url : asset('storage/'.$service->image_url) }}" alt="{{ $service->name }}">
+                @else
+                    <div class="cs-thumb"></div>
+                @endif
+
+                <div class="cs-info">
+                    <b>{{ $service->client->business_name ?? 'Mitra Pembersih' }}</b><br>
+                    {{ $service->name }}<br>
+                    {{ $service->category }}<br>
+                    Mulai dari Rp {{ number_format($service->base_price, 0, ',', '.') }}
+                </div>
+
+                <a class="cs-btn" href="{{ route('customer.services.show', $service->id) }}">Detail</a>
+            </article>
+        @empty
+            <div class="cs-empty">Belum ada layanan yang sesuai.</div>
+        @endforelse
+    </section>
+</div>
+</div>
 </x-layouts.customer>

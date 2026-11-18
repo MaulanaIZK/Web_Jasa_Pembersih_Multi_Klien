@@ -23,6 +23,7 @@ class Client extends Model
         'bank_account_number',
         'bank_account_holder',
         'description',
+        'avatar_path',
         'service_area',
         'status',
     ];
@@ -35,5 +36,11 @@ class Client extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
+    }
+
+    /** URL foto profil, atau null bila belum ada foto. */
+    public function avatarUrl(): ?string
+    {
+        return $this->avatar_path ? asset('storage/'.$this->avatar_path) : null;
     }
 }

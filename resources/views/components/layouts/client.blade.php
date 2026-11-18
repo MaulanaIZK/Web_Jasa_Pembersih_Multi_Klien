@@ -17,6 +17,7 @@
             <a href="{{ route('client.orders.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Pesanan Masuk</a>
             <a href="{{ route('client.payments.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Keuangan & Verifikasi</a>
             <a href="{{ route('client.reports.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Laporan Omset</a>
+            <a href="{{ route('client.profile.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Profil Usaha</a>
         </nav>
         <div class="p-4 border-t border-slate-800">
             <form action="{{ route('logout') }}" method="POST">

@@ -1,175 +1,177 @@
-@php
-    $img = function ($n) {
-        foreach (['png', 'jpg', 'jpeg', 'webp'] as $e) {
-            if (file_exists(public_path("images/landing/$n.$e"))) return asset("images/landing/$n.$e");
-        }
-        return null;
-    };
-    $layanan = [
-        ['ruangan',   '🛋️', 'Ruangan',   'Layanan kebersihan untuk berbagai jenis ruang: rumah, kamar, dan ruang kerja.', 'from-amber-100 to-orange-200'],
-        ['bangunan',  '🏢', 'Bangunan',  'Pembersihan area luas seperti gedung, fasad kaca, dan lobi perkantoran.',      'from-sky-200 to-blue-300'],
-        ['kendaraan', '🚗', 'Kendaraan', 'Cuci dan perawatan mobil atau motor langsung di lokasi Anda.',                  'from-stone-200 to-stone-400'],
-        ['lainnya',   '🌿', 'Lainnya',   'Butuh layanan lain? Ketik sendiri kebutuhan Anda dan mitra akan membantu.',    'from-green-200 to-emerald-300'],
-    ];
-    $alasan = [
-        ['Profesional & Terpercaya', 'Layanan dikerjakan penyedia jasa yang sudah terverifikasi.'],
-        ['Pemesanan Mudah',          'Pesan layanan kebersihan dengan beberapa langkah saja.'],
-        ['Berbagai Pilihan Layanan', 'Dari ruangan, bangunan, hingga kendaraan tersedia di satu tempat.'],
-        ['Sesuai Kebutuhan',         'Pilih layanan dan jadwal sesuai kebutuhan Anda.'],
-        ['Mudah Dihubungi',          'Hubungi mitra langsung lewat platform kapan saja.'],
-    ];
-    $tenant = [
-        ['CleanPro',  '🏠', 'Rp 150.000', '4.8', '1.2K'],
-        ['BersihYuk', '💧', 'Rp 130.000', '4.8', '832'],
-        ['AutoClean', '🚗', 'Rp 100.000', '4.7', '645'],
-    ];
-@endphp
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CleanerShip - Platform Jasa Kebersihan Multi-Klien</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white text-gray-800 antialiased" style="font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
-    <!-- Navbar -->
-    <header class="bg-white sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="/" class="text-xl font-extrabold text-cyan-500">Cleaner<span class="text-gray-900">Ship</span></a>
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-900">
-                <a href="#beranda" class="hover:text-indigo-600">Beranda</a>
-                <a href="#layanan" class="hover:text-indigo-600">Layanan</a>
-                <a href="#tentang" class="hover:text-indigo-600">Tentang</a>
-                <a href="#bantuan" class="hover:text-indigo-600">Bantuan</a>
-            </nav>
-            <a href="{{ route('login') }}" class="bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold px-5 py-2 rounded-md">Login</a>
+    <!-- Header Navbar Lanskap Desktop -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-10">
+                <a href="/" class="text-2xl font-black text-blue-500 tracking-tight flex items-center gap-2">
+                    <span class="bg-blue-500 text-white p-2 rounded-lg text-base">✨</span>
+                    <span>Cleaner<span class="text-gray-900">Ship</span></span>
+                </a>
+                <nav class="hidden lg:flex items-center gap-8 text-sm font-bold text-gray-600">
+                    <a href="#beranda" class="hover:text-blue-600 transition">Beranda</a>
+                    <a href="#keunggulan" class="hover:text-blue-600 transition">Keunggulan</a>
+                    <a href="#layanan" class="hover:text-blue-600 transition">Katalog Layanan</a>
+                    <a href="#cara-kerja" class="hover:text-blue-600 transition">Cara Kerja</a>
+                    <a href="#gabung-mitra" class="hover:text-blue-600 transition">Jadi Mitra</a>
+                </nav>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="{{ route('login') }}" class="text-sm font-bold text-gray-700 hover:text-blue-600 px-4 py-2.5 transition">
+                    Masuk
+                </a>
+                <a href="{{ route('register') }}" class="text-sm font-bold text-white bg-blue-500 hover:bg-blue-600 px-5 py-2.5 rounded-xl shadow-md transition">
+                    Daftar Akun
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- Hero -->
-    <section id="beranda" class="bg-indigo-100">
-        <div class="max-w-6xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <div class="space-y-4">
-                <h1 class="text-3xl sm:text-4xl font-bold leading-tight text-gray-900">Jasa Kebersihan Profesional,<br>Pesan Lebih Mudah</h1>
-                <p class="text-sm text-gray-700 max-w-md">Temukan dan pesan jasa pembersih terbaik untuk berbagai kebutuhan: rumah, bangunan, kendaraan, dan lainnya.</p>
-                <a href="{{ route('login') }}" class="inline-block bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold px-5 py-2.5 rounded-md">Pesan Sekarang</a>
-            </div>
-            <div class="flex justify-center">
-                @if ($img('hero'))
-                    <img src="{{ $img('hero') }}" alt="Perlengkapan kebersihan" class="max-h-64 object-contain">
-                @else
-                    <div class="w-64 h-56 rounded-3xl bg-white/60 flex items-center justify-center text-7xl">🪣🧽</div>
-                @endif
-            </div>
-        </div>
-    </section>
-
-    <!-- Layanan yang kami miliki -->
-    <section id="layanan" class="py-14 px-6">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="font-serif italic text-3xl text-gray-900">Layanan yang kami miliki</h2>
-            <p class="mt-3 text-sm text-gray-700 max-w-2xl mx-auto">CleanerShip menyediakan berbagai pilihan layanan yang dapat disesuaikan dengan kebutuhan pelanggan. Mulai dari membersihkan ruangan, bangunan, kendaraan, hingga kebutuhan kebersihan lainnya.</p>
-
-            <div class="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @foreach ($layanan as [$slug, $icon, $judul, $desk, $grad])
-                    <a href="{{ route('login') }}" class="bg-gray-100 rounded-md overflow-hidden text-center block hover:shadow-md transition">
-                        @if ($img($slug))
-                            <img src="{{ $img($slug) }}" alt="{{ $judul }}" class="w-full h-32 object-cover">
-                        @else
-                            <div class="w-full h-32 bg-gradient-to-br {{ $grad }} flex items-center justify-center text-5xl">{{ $icon }}</div>
-                        @endif
-                        <div class="p-3 space-y-1">
-                            <h3 class="font-bold text-sm text-gray-900">{{ $judul }}</h3>
-                            <p class="text-[11px] text-gray-600 leading-snug">{{ $desk }}</p>
-                            <span class="inline-block pt-1 text-[11px] font-semibold text-gray-900">Lihat detail</span>
-                        </div>
+    <!-- Hero Section Lanskap -->
+    <section id="beranda" class="bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900 text-white py-20 px-8 relative">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <span class="inline-block bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+                    Pusat Informasi Jasa Kebersihan Multi-Klien
+                </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
+                    Solusi Bersih Profesional untuk Rumah &amp; Kantor
+                </h1>
+                <p class="text-blue-100 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                    Hubungkan kebutuhan pembersihan tempat tinggal dan bisnis Anda dengan mitra penyedia jasa terverifikasi secara langsung. Transparan, bergaransi, dan aman.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                    <a href="#layanan" class="bg-blue-500 hover:bg-blue-400 text-white font-extrabold px-8 py-4 rounded-xl shadow-lg transition text-center text-sm">
+                        Jelajahi Katalog Layanan
                     </a>
-                @endforeach
+                    <a href="#gabung-mitra" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-8 py-4 rounded-xl transition text-center text-sm">
+                        Daftarkan Mitra Jasa Anda
+                    </a>
+                </div>
+            </div>
+
+            <!-- Kartu Info Statistik -->
+            <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                <div class="bg-white/10 border border-white/15 p-6 rounded-2xl text-center">
+                    <p class="text-3xl font-extrabold text-blue-400">500+</p>
+                    <p class="text-xs text-blue-100 mt-1 font-medium uppercase tracking-wider">Mitra Terverifikasi</p>
+                </div>
+                <div class="bg-white/10 border border-white/15 p-6 rounded-2xl text-center">
+                    <p class="text-3xl font-extrabold text-green-400">15.000+</p>
+                    <p class="text-xs text-blue-100 mt-1 font-medium uppercase tracking-wider">Pesanan Selesai</p>
+                </div>
+                <div class="bg-white/10 border border-white/15 p-6 rounded-2xl text-center">
+                    <p class="text-3xl font-extrabold text-yellow-400">4.9 ★</p>
+                    <p class="text-xs text-blue-100 mt-1 font-medium uppercase tracking-wider">Rating Pelanggan</p>
+                </div>
+                <div class="bg-white/10 border border-white/15 p-6 rounded-2xl text-center">
+                    <p class="text-3xl font-extrabold text-blue-300">100%</p>
+                    <p class="text-xs text-blue-100 mt-1 font-medium uppercase tracking-wider">Garansi Bersih</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Mengapa memilih -->
-    <section id="tentang" class="bg-sky-100 py-14 px-6">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900">Mengapa Memilih Layanan Kami?<br>Solusi kebersihan yang mudah, praktis, dan terpercaya.</h2>
+    <!-- Keunggulan Platform -->
+    <section id="keunggulan" class="py-16 px-8 max-w-7xl mx-auto w-full">
+        <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+            <h2 class="text-3xl font-black text-gray-900">Mengapa Memilih CleanerShip?</h2>
+            <p class="text-gray-600 text-sm">Platform kami dirancang untuk memberikan standar kebersihan tinggi dengan kemudahan akses penuh.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-xl">🛡️</div>
+                <h3 class="text-xl font-bold text-gray-900">Mitra Terverifikasi &amp; Terlatih</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Seluruh teknisi pembersih melewati tahap audit verifikasi resmi dan jaminan keahlian.</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center font-bold text-xl">💳</div>
+                <h3 class="text-xl font-bold text-gray-900">Pembayaran QRIS &amp; Split Ledger</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Sistem transaksi aman dengan gateway otomatis tanpa biaya tersembunyi.</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center font-bold text-xl">📅</div>
+                <h3 class="text-xl font-bold text-gray-900">Pre-Order &amp; Sesi Fleksibel</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Atur jadwal kedatangan tim kebersihan sesuai jam luang Anda dengan alokasi slot pasti.</p>
+            </div>
+        </div>
+    </section>
 
-            <div class="mt-10 grid grid-cols-2 lg:grid-cols-5 gap-4 items-start">
-                @foreach ($alasan as $i => [$judul, $desk])
-                    <div class="bg-white rounded-md border-t-4 border-sky-400 shadow p-4 text-center {{ $i % 2 ? 'lg:mt-10' : '' }}">
-                        <h3 class="font-bold text-sm text-gray-900">{{ $judul }}</h3>
-                        <p class="mt-2 text-[11px] text-gray-600 leading-snug">{{ $desk }}</p>
+    <!-- Showcase Layanan Utama Lanskap -->
+    <section id="layanan" class="py-16 bg-gray-100 px-8">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Katalog Unggulan</span>
+                    <h2 class="text-3xl font-black text-gray-900 mt-1">Pilihan Layanan Kebersihan</h2>
+                </div>
+                <a href="{{ route('login') }}" class="text-sm font-bold text-blue-600 hover:underline">
+                    Lihat Semua Layanan Katalog →
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <span class="text-3xl">🧹</span>
+                    <h3 class="text-lg font-bold text-gray-900">Home Cleaning Standar</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Pembersihan ruangan rumah, penyapuan, pengepelan lantai, &amp; kerapihan area keluarga.</p>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="font-black text-blue-600 text-base">Rp 150.000</span>
+                        <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg">Pesan</a>
                     </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+                </div>
 
-    <!-- Tenant populer -->
-    <section class="py-14 px-6">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex items-end justify-between">
-                <h2 class="text-2xl sm:text-3xl font-black tracking-wide text-gray-900">Tenant Populer</h2>
-                <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-900 hover:text-indigo-600">Lihat semua &rsaquo;</a>
-            </div>
-
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
-                @foreach ($tenant as [$nama, $ikon, $harga, $rating, $ulasan])
-                    <div class="border border-gray-200 rounded-lg p-6 text-center space-y-3">
-                        @if ($img(strtolower($nama)))
-                            <img src="{{ $img(strtolower($nama)) }}" alt="{{ $nama }}" class="h-20 mx-auto object-contain">
-                        @else
-                            <div class="h-20 flex flex-col items-center justify-center">
-                                <span class="text-4xl">{{ $ikon }}</span>
-                                <span class="text-sm font-extrabold text-sky-600">{{ $nama }}</span>
-                            </div>
-                        @endif
-                        <p class="font-medium text-gray-900">Mulai {{ $harga }}</p>
-                        <p class="text-sm"><span class="text-yellow-400">★</span> <span class="font-bold">{{ $rating }}</span> <span class="text-gray-400">({{ $ulasan }})</span></p>
-                        <a href="{{ route('login') }}" class="block border-t border-gray-200 pt-3 text-sm text-gray-600 hover:text-indigo-600">Lihat detail</a>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <span class="text-3xl">🧽</span>
+                    <h3 class="text-lg font-bold text-gray-900">Deep Cleaning Disinfeksi</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Pembersihan mendalam kerak toilet, dapur, serta sterilisasi disinfektan ruang.</p>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="font-black text-blue-600 text-base">Rp 350.000</span>
+                        <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg">Pesan</a>
                     </div>
-                @endforeach
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <span class="text-3xl">❄️</span>
+                    <h3 class="text-lg font-bold text-gray-900">Cuci &amp; Service AC</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Pembersihan filter indoor, cuci kompresor outdoor, &amp; pembersihan saluran air.</p>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="font-black text-blue-600 text-base">Rp 90.000</span>
+                        <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg">Pesan</a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <span class="text-3xl">🛋️</span>
+                    <h3 class="text-lg font-bold text-gray-900">Cuci Sofa &amp; Kasur</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Vakum kuman tungau, pencucian busa basah, &amp; pengeringan kompresor.</p>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="font-black text-blue-600 text-base">Rp 250.000</span>
+                        <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg">Pesan</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="bantuan" class="bg-indigo-100 pt-10 pb-6 px-6">
-        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 text-sm">
-            <div class="col-span-2 md:col-span-1 space-y-2">
-                <p class="text-xl font-extrabold text-cyan-500">Cleaner<span class="text-gray-900">Ship</span></p>
-                <p class="text-xs text-gray-700">Solusi mudah untuk memenuhi kebutuhan kebersihan Anda.</p>
-            </div>
-            <div class="space-y-2">
-                <p class="font-bold text-gray-900">Layanan</p>
-                <a href="{{ route('login') }}" class="block text-xs text-gray-700 hover:underline">Ruangan</a>
-                <a href="{{ route('login') }}" class="block text-xs text-gray-700 hover:underline">Bangunan</a>
-                <a href="{{ route('login') }}" class="block text-xs text-gray-700 hover:underline">Kendaraan</a>
-                <a href="{{ route('login') }}" class="block text-xs text-gray-700 hover:underline">Lainnya</a>
-            </div>
-            <div class="space-y-2">
-                <p class="font-bold text-gray-900">Tentang</p>
-                <a href="#tentang" class="block text-xs text-gray-700 hover:underline">Tentang Kami</a>
-                <a href="#tentang" class="block text-xs text-gray-700 hover:underline">Cara Kerja</a>
-                <a href="#" class="block text-xs text-gray-700 hover:underline">Mitra Kami</a>
-            </div>
-            <div class="space-y-2">
-                <p class="font-bold text-gray-900">Bantuan</p>
-                <a href="#" class="block text-xs text-gray-700 hover:underline">Pusat Bantuan</a>
-                <a href="#" class="block text-xs text-gray-700 hover:underline">FAQ</a>
-                <a href="#" class="block text-xs text-gray-700 hover:underline">Hubungi Kami</a>
-            </div>
-            <div class="space-y-2">
-                <p class="font-bold text-gray-900">Ikuti CleanerShip</p>
-                <p class="text-xs text-gray-700">Dapatkan informasi terbaru dan promo menarik dari kami.</p>
+    <!-- Footer Lanskap -->
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; {{ date('Y') }} CleanerShip Platform - Jasa Kebersihan Multi-Klien.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:underline">Kebijakan Privasi</a>
+                <a href="#" class="hover:underline">Syarat &amp; Ketentuan</a>
             </div>
         </div>
-        <p class="mt-8 text-center text-[11px] text-gray-500">&copy; {{ date('Y') }} CleanerShip. All rights reserved.</p>
     </footer>
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
@@ -13,21 +14,31 @@ class Service extends Model
 
     protected $fillable = [
         'client_id',
-        'name',
-        'category',
+        'category_name',
+        'title',
+        'slug',
         'description',
         'base_price',
-        'image_url',
-        'is_active',
+        'estimated_duration_minutes',
+        'is_available',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'base_price' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'base_price' => 'decimal:2',
+            'estimated_duration_minutes' => 'integer',
+            'is_available' => 'boolean',
+        ];
+    }
 
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function options(): HasMany
+    {
+        return $this->hasMany(ServiceOption::class);
     }
 }

@@ -9,7 +9,8 @@ Route::middleware('web')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/register', [AuthController::class, 'showCustomerRegisterForm'])->name('register');
+    Route::get('/register', [AuthController::class, 'showRegisterChoice'])->name('register');
+    Route::get('/register/customer', [AuthController::class, 'showCustomerRegisterForm'])->name('register.customer');
     Route::post('/register', [AuthController::class, 'registerCustomer']);
     Route::get('/register/client', [AuthController::class, 'showClientRegisterForm'])->name('register.client');
     Route::post('/register/client', [AuthController::class, 'registerClient']);

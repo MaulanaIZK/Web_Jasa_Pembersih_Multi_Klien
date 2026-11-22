@@ -3,7 +3,7 @@
         <!-- Tab Navigasi Atas -->
         <div class="flex border-b border-gray-200 mb-6 text-sm font-medium text-center">
             <a href="{{ route('login') }}" class="w-1/3 pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700">Masuk</a>
-            <a href="{{ route('register') }}" class="w-1/3 pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700">Pelanggan</a>
+            <a href="{{ route('register.customer') }}" class="w-1/3 pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700">Pelanggan</a>
             <span class="w-1/3 pb-3 border-b-2 border-blue-600 text-blue-600 font-bold">Mitra Klien</span>
         </div>
 
@@ -74,7 +74,7 @@
                 <a href="{{ route('login') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition">
                     Sudah Punya Akun (Masuk)
                 </a>
-                <a href="{{ route('register') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition">
+                <a href="{{ route('register.customer') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition">
                     Daftar Sebagai Pelanggan
                 </a>
             </div>

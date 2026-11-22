@@ -31,6 +31,16 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Alamat email atau kata sandi salah.']);
     }
 
+    public function showRegisterChoice()
+    {
+        return view('auth::register-choice');
+    }
+
+    public function showClientRegisterForm()
+    {
+        return view('auth::register-client');
+    }
+
     public function showCustomerRegisterForm()
     {
         return view('auth.register');

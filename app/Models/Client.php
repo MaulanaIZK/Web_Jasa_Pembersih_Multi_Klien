@@ -27,7 +27,16 @@ class Client extends Model
         'description',
         'service_area',
         'status',
+        'rejection_reason',
+        'reviewed_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'reviewed_at' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -37,6 +46,11 @@ class Client extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
+    }
+
+    public function isPending(): bool
+    {
+        return strtolower((string) $this->status) === 'pending';
     }
 
     public function isActive(): bool

@@ -1,0 +1,259 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Middleware/SetClientContext.php
+
+		-
+			message: '#^Class App\\Models\\Client uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Client.php
+
+		-
+			message: '#^Method App\\Models\\Client\:\:services\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Client.php
+
+		-
+			message: '#^Method App\\Models\\Client\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Client.php
+
+		-
+			message: '#^Class App\\Models\\ClientBalance uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ClientBalance.php
+
+		-
+			message: '#^Method App\\Models\\ClientBalance\:\:client\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ClientBalance.php
+
+		-
+			message: '#^Class App\\Models\\CustomerProfile uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerProfile.php
+
+		-
+			message: '#^Method App\\Models\\CustomerProfile\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerProfile.php
+
+		-
+			message: '#^Class App\\Models\\Service uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:client\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:options\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Class App\\Models\\ServiceOption uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ServiceOption.php
+
+		-
+			message: '#^Method App\\Models\\ServiceOption\:\:service\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ServiceOption.php
+
+		-
+			message: '#^Call to function is_null\(\) with string will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Class App\\Models\\User uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:client\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasOne does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:customerProfile\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasOne does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:edit\(\) has parameter \$idClient with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminDashboardController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminDashboardController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:edit\(\) has parameter \$idClient with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Sanctum\\PersonalAccessToken\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/ApiAuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:login\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:logout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:registerCustomer\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showClientRegisterForm\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showCustomerRegisterForm\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showLoginForm\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showRegisterChoice\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Method App\\Modules\\Auth\\Http\\Requests\\ClientProfileRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Auth/Http/Requests/ClientProfileRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Catalog\\Http\\Requests\\ServiceRequest\:\:rules\(\) has invalid return type App\\Modules\\Catalog\\Http\\Requests\\ValidationRule\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Catalog/Http/Requests/ServiceRequest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Governance/Http/Controllers/GovernanceController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Policies/ClientPolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Policies/ServicePolicy.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: config/sanctum.php

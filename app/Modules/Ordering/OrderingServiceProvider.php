@@ -2,7 +2,6 @@
 
 namespace App\Modules\Ordering;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class OrderingServiceProvider extends ModuleServiceProvider
@@ -12,7 +11,7 @@ final class OrderingServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
-        // 
+        //
     }
 
     /**
@@ -23,4 +22,3 @@ final class OrderingServiceProvider extends ModuleServiceProvider
         return 'ordering';
     }
 }
-

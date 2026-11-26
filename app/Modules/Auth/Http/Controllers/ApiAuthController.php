@@ -50,7 +50,7 @@ class ApiAuthController extends Controller
                 'user' => $user->load('customerProfile'),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ], 201);
     }
 
@@ -94,7 +94,7 @@ class ApiAuthController extends Controller
                 ],
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ], 200);
     }
 
@@ -108,7 +108,7 @@ class ApiAuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Berhasil keluar (logout) dari sesi API.'
+            'message' => 'Berhasil keluar (logout) dari sesi API.',
         ], 200);
     }
 }

@@ -167,7 +167,7 @@ class GovernanceController extends Controller
         $i = 2;
 
         while (Client::where('slug', $slug)->exists()) {
-            $slug = $dasar . '-' . $i++;
+            $slug = $dasar.'-'.$i++;
         }
 
         return $slug;

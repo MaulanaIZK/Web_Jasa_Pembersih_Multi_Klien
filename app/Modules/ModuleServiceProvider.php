@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Modules;
+
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use ReflectionClass;
@@ -8,6 +9,7 @@ use ReflectionClass;
 abstract class ModuleServiceProvider extends ServiceProvider
 {
     abstract protected function moduleAlias(): string;
+
     /**
      * Create a new class instance.
      */
@@ -22,7 +24,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
             viewPath: $path.'/resources/views/livewire',
         );
 
-        foreach (glob($path.'/routes/*.php') ?: [] as $routeFile){
+        foreach (glob($path.'/routes/*.php') ?: [] as $routeFile) {
             $this->loadRoutesFrom($routeFile);
         }
     }

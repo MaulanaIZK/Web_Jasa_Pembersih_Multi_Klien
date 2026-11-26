@@ -2,7 +2,6 @@
 
 namespace App\Modules\Support;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class SupportServiceProvider extends ModuleServiceProvider

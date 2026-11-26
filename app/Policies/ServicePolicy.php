@@ -28,7 +28,7 @@ class ServicePolicy
      */
     public function update(User $user, Service $service): bool
     {
-        return $this->viewAny($user) 
+        return $this->viewAny($user)
             && (int) $user->client->id === $service->client_id;
     }
 

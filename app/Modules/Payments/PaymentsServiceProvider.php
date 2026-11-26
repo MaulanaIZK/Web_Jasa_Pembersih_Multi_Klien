@@ -2,7 +2,6 @@
 
 namespace App\Modules\Payments;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class PaymentsServiceProvider extends ModuleServiceProvider

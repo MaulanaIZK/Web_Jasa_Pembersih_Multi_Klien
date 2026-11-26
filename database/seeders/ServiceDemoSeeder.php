@@ -13,6 +13,7 @@ class ServiceDemoSeeder extends Seeder
         $client = Client::first();
         if (! $client) {
             $this->command->error('Belum ada Client. Buat mitra dulu.');
+
             return;
         }
 

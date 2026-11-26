@@ -2,7 +2,6 @@
 
 namespace App\Modules\Governance;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class GovernanceServiceProvider extends ModuleServiceProvider

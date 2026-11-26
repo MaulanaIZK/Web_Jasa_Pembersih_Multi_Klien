@@ -2,7 +2,6 @@
 
 namespace App\Modules\Auth;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class AuthServiceProvider extends ModuleServiceProvider
@@ -12,7 +11,7 @@ final class AuthServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
-        // 
+        //
     }
 
     /**

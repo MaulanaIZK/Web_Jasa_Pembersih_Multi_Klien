@@ -64,7 +64,7 @@ class ServiceController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Service::class);
-        
+
         $client = $request->user()->client;
         $services = $client->services()->latest()->get();
 
@@ -74,7 +74,7 @@ class ServiceController extends Controller
     public function create(Request $request): View
     {
         $this->authorize('create', Service::class);
-       
+
         $client = $request->user()->client;
 
         return view('catalog::client.create', compact('client'));

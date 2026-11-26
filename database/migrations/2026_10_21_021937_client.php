@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('client', function(Blueprint $table): void{
+        Schema::create('client', function (Blueprint $table): void {
             $table->id('idClient');
             $table->string('namaPebisnis');
             $table->string('namaClient');
             $table->string('email');
             $table->string('noTelepon');
             $table->string('alamat');
-            $table->enum('layanan',['bangunan','ruangan','kendaraan','other']);
+            $table->enum('layanan', ['bangunan', 'ruangan', 'kendaraan', 'other']);
             $table->string('deskripsi');
-            $table->enum('status',['aktif','tidak aktif','libur']);
+            $table->enum('status', ['aktif', 'tidak aktif', 'libur']);
             $table->string('fotoProfil');
             $table->date('tglNonAktif');
             $table->string('alasaNonaktif');

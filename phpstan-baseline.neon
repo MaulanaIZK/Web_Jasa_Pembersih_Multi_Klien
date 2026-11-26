@@ -193,12 +193,6 @@ parameters:
 			path: app/Modules/Auth/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showClientRegisterForm\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Auth/Http/Controllers/AuthController.php
-
-		-
 			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showCustomerRegisterForm\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -211,10 +205,22 @@ parameters:
 			path: app/Modules/Auth/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Method App\\Modules\\Auth\\Http\\Controllers\\AuthController\:\:showRegisterChoice\(\) has no return type specified\.$#'
-			identifier: missingType.return
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar_path\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Modules/Auth/Http/Controllers/AuthController.php
+			path: app/Modules/Auth/Http/Controllers/ClientProfileController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/ClientProfileController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Auth/Http/Controllers/ClientProfileController.php
 
 		-
 			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
@@ -227,6 +233,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Auth/Http/Requests/ClientProfileRequest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:services\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Modules/Catalog/Http/Controllers/ServiceController.php
 
 		-
 			message: '#^Method App\\Modules\\Catalog\\Http\\Requests\\ServiceRequest\:\:rules\(\) has invalid return type App\\Modules\\Catalog\\Http\\Requests\\ValidationRule\.$#'

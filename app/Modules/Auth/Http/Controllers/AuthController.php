@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\User;
 use App\Modules\Governance\Notifications\ClientRegistered;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,12 +38,12 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Alamat email atau kata sandi salah.']);
     }
 
-    public function showRegisterChoice()
+    public function showRegisterChoice(): View
     {
         return view('auth::register-choice');
     }
 
-    public function showClientRegisterForm()
+    public function showClientRegisterForm(): View
     {
         return view('auth::register-client');
     }
@@ -70,7 +72,7 @@ class AuthController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function registerClient(Request $request)
+    public function registerClient(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -120,7 +122,7 @@ class AuthController extends Controller
         return redirect()->route('register.client.pending');
     }
 
-    public function showClientPending()
+    public function showClientPending(): View
     {
         return view('auth::register-client-pending');
     }

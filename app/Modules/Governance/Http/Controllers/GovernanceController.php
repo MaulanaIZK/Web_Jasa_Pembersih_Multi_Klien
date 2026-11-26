@@ -5,6 +5,7 @@ namespace App\Modules\Governance\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\User;
+use App\Modules\Governance\Notifications\ClientReviewed;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,11 +17,18 @@ class GovernanceController extends Controller
     /**
      * Daftar mitra klien.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $clients = Client::with('user')->latest()->get();
+        $status = $request->query('status');
 
-        return view('governance::index', compact('clients'));
+        $clients = Client::with('user')
+            ->when(in_array($status, ['pending', 'active', 'suspended', 'rejected'], true), fn ($q) => $q->where('status', $status))
+            ->latest()
+            ->get();
+
+        $counts = Client::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
+
+        return view('governance::index', compact('clients', 'counts', 'status'));
     }
 
     /**
@@ -86,10 +94,57 @@ class GovernanceController extends Controller
      */
     public function verifyClient(Client $client): RedirectResponse
     {
-        $client->update(['status' => 'active']);
+        $client->update([
+            'status' => 'active',
+            'rejection_reason' => null,
+            'reviewed_at' => now(),
+        ]);
         $client->user?->update(['status' => 'active']);
 
-        return back()->with('success', 'Mitra berhasil diverifikasi.');
+        $terkirim = $this->beriTahu($client, true);
+
+        return back()->with('success', 'Mitra berhasil diverifikasi'.($terkirim ? ' dan diberi tahu lewat email.' : ', tetapi email gagal dikirim.'));
+    }
+
+    /**
+     * Tolak pendaftaran mitra beserta alasannya.
+     */
+    public function rejectClient(Request $request, Client $client): RedirectResponse
+    {
+        $data = $request->validate([
+            'reason' => ['required', 'string', 'min:5', 'max:500'],
+        ]);
+
+        $client->update([
+            'status' => 'rejected',
+            'rejection_reason' => $data['reason'],
+            'reviewed_at' => now(),
+        ]);
+        $client->user?->update(['status' => 'rejected']);
+
+        $terkirim = $this->beriTahu($client, false, $data['reason']);
+
+        return back()->with('success', 'Pendaftaran mitra ditolak'.($terkirim ? ' dan mitra diberi tahu lewat email.' : ', tetapi email gagal dikirim.'));
+    }
+
+    /**
+     * Kirim email hasil verifikasi. Kegagalan kirim tidak boleh menggagalkan keputusan admin.
+     */
+    private function beriTahu(Client $client, bool $disetujui, ?string $alasan = null): bool
+    {
+        if (! $client->user) {
+            return false;
+        }
+
+        try {
+            $client->user->notify(new ClientReviewed($client, $disetujui, $alasan));
+
+            return true;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return false;
+        }
     }
 
     /**

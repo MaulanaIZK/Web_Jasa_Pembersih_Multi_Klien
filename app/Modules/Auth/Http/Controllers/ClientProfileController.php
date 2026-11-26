@@ -8,6 +8,7 @@ use App\Modules\Auth\Http\Requests\ClientProfileRequest;
 use App\Modules\Auth\Services\AvatarStore;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -15,8 +16,11 @@ class ClientProfileController extends Controller
 {
     use AuthorizesRequests;
 
-    public function edit(Client $client): View
+    public function edit(Request $request): View
     {
+        $client = $request->user()->client;
+        abort_if($client === null, 403, 'Profil Client tidak ditemukan.');
+
         $this->authorize('view', $client);
 
         $client->load('user');
@@ -24,8 +28,11 @@ class ClientProfileController extends Controller
         return view('auth::client.profile', compact('client'));
     }
 
-    public function update(ClientProfileRequest $request, Client $client, AvatarStore $avatars): RedirectResponse
+    public function update(ClientProfileRequest $request, AvatarStore $avatars): RedirectResponse
     {
+        $client = $request->user()->client;
+        abort_if($client === null, 403, 'Profil Client tidak ditemukan.');
+
         $this->authorize('update', $client);
 
         $data = $request->validated();

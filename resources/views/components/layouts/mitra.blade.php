@@ -43,6 +43,31 @@
         .mp-badge.menunggu{background:#fde7b0;color:#8a5a00}
         .mp-badge.diproses{background:#d7ecff;color:#0a5a99}
         .mp-badge.selesai{background:#d4f5df;color:#1a7a3e}
+        .mp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px}
+        .mp-alert{margin-bottom:20px;padding:12px 16px;border-radius:10px;font-size:14px}
+        .mp-alert.sukses{background:#d4f5df;color:#1a7a3e}
+        .mp-alert.galat{background:#fde0e0;color:#a12020}
+        .mp-btn{display:inline-block;padding:10px 18px;border:1px solid transparent;border-radius:8px;background:#25005e;color:#fff;font:inherit;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer}
+        .mp-btn:hover{background:#3a0a85}
+        .mp-btn.kecil{padding:6px 12px;font-size:12px}
+        .mp-btn.sekunder{background:#fff;border-color:#c9c3dc;color:#25005e}
+        .mp-btn.sekunder:hover{background:#f3f0fa}
+        .mp-btn.bahaya{background:#fff;border-color:#f0b4b4;color:#b42323}
+        .mp-btn.bahaya:hover{background:#fdeeee}
+        .mp-aksi{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+        .mp-aksi form{margin:0}
+        .mp-table .kanan{text-align:right}
+        .mp-muted{font-size:12px;color:#6b7280;margin-top:2px}
+        .mp-kosong{padding:32px 16px;text-align:center;color:#6b7280}
+        .mp-badge.aktif{background:#d4f5df;color:#1a7a3e}
+        .mp-badge.libur{background:#ececec;color:#4b5563}
+        .mp-card{max-width:620px;padding:24px;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+        .mp-field{margin-bottom:18px}
+        .mp-field label{display:block;margin-bottom:6px;font-size:14px;font-weight:600}
+        .mp-input{width:100%;padding:10px 12px;border:1px solid #c9c3dc;border-radius:8px;background:#fff;font:inherit;font-size:14px;color:#111}
+        .mp-input:focus{outline:2px solid #25005e33;border-color:#25005e}
+        .mp-error{margin-top:4px;font-size:12px;color:#b42323}
+        .mp-form-aksi{display:flex;gap:10px;margin-top:8px}
         @@media(max-width:768px){.mp-shell{flex-direction:column}.mp-side{width:100%}.mp-main{padding:20px}.mp-stats{grid-template-columns:1fr}}
     </style>
 </head>

@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pesanan', function(Blueprint $table): void{
+        Schema::create('pesanan', function (Blueprint $table): void {
             $table->id('idPesanan');
             $table->string('namaCostumer');
             $table->string('lokasiTempat');
             $table->date('tanggalPesanan');
             $table->integer('jumlahJasa');
             $table->string('FotoKondisiTempat');
-            $table->enum('status',['proses','selesai']);
+            $table->enum('status', ['proses', 'selesai']);
             $table->bigInteger('idCostumer')->unsigned();
             $table->bigInteger('idLayanan')->unsigned();
             $table->bigInteger('idClient')->unsigned();

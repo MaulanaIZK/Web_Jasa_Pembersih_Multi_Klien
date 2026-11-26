@@ -2,7 +2,6 @@
 
 namespace App\Modules\Catalog;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class CatalogServiceProvider extends ModuleServiceProvider

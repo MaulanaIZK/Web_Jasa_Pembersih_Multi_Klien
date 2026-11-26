@@ -11,6 +11,7 @@ class AdminTenantController extends Controller
     public function index(Request $request)
     {
         $tenants = Client::latest('created_at')->get();
+
         return view('admin::tenants.index', compact('tenants'));
     }
 
@@ -27,6 +28,7 @@ class AdminTenantController extends Controller
     public function edit($idClient)
     {
         $tenant = Client::findOrFail($idClient);
+
         return view('admin::tenants.edit', compact('tenant'));
     }
 }

@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\DashboardRedirectController;
 use App\Modules\Admin\Http\Controllers\AdminDashboardController;
-use App\Modules\Client\Http\Controllers\ClientDashboardController;
 use App\Modules\Auth\Http\Controllers\AuthController;
+use App\Modules\Client\Http\Controllers\ClientDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

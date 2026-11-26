@@ -13,7 +13,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', function (Request $request) {
         return response()->json([
             'status' => 'success',
-            'data' => $request->user()->load('customerProfile', 'client')
+            'data' => $request->user()->load('customerProfile', 'client'),
         ]);
     });
 

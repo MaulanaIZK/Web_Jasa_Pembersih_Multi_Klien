@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembayaran', function(Blueprint $table): void{
+        Schema::create('pembayaran', function (Blueprint $table): void {
             $table->id('idPembayaran');
             $table->string('buktiPembayaran');
-            $table->enum('statusPembayaran',['menunggu','selesai']);
+            $table->enum('statusPembayaran', ['menunggu', 'selesai']);
             $table->date('tglPembayaran');
             $table->bigInteger('idPesanan')->unsigned();
             $table->foreign('idPesanan')->references('idPesanan')->on('pesanan');
-
 
         });
     }

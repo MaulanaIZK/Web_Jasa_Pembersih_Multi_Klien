@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('layanan', function(Blueprint $table): void{
+        Schema::create('layanan', function (Blueprint $table): void {
             $table->id('idLayanan');
             $table->string('namaLayanan');
             $table->string('deskripsiLayanan');
             $table->integer('jumlahJasa');
             $table->decimal('hargaLayanan');
-            $table->enum('statusLayanan',['tersedia','tidak tersedia']);
+            $table->enum('statusLayanan', ['tersedia', 'tidak tersedia']);
             $table->bigInteger('idClient')->unsigned();
             $table->foreign('idClient')->references('idClient')->on('client');
             $table->timestamps();

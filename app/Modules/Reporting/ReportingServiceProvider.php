@@ -2,7 +2,6 @@
 
 namespace App\Modules\Reporting;
 
-use Illuminate\Support\ServiceProvider;
 use App\Modules\ModuleServiceProvider;
 
 final class ReportingServiceProvider extends ModuleServiceProvider

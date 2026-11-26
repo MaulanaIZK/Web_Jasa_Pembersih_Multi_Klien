@@ -15,7 +15,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/me', function (Request $request) {
             return response()->json([
                 'status' => 'success',
-                'data' => $request->user()->load('customerProfile', 'client')
+                'data' => $request->user()->load('customerProfile', 'client'),
             ]);
         });
     });

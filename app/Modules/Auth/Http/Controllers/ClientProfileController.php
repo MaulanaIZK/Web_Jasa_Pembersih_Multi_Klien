@@ -3,7 +3,6 @@
 namespace App\Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
 use App\Modules\Auth\Http\Requests\ClientProfileRequest;
 use App\Modules\Auth\Services\AvatarStore;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;

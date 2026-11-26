@@ -61,25 +61,30 @@ class ServiceController extends Controller
     }
 
     // Untuk Portal Client (Penyedia Jasa)
-    public function index(Client $client): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', Service::class);
         
+        $client = $request->user()->client;
         $services = $client->services()->latest()->get();
 
         return view('catalog::client.index', compact('client', 'services'));
     }
 
-    public function create(Client $client): View
+    public function create(Request $request): View
     {
         $this->authorize('create', Service::class);
        
+        $client = $request->user()->client;
+
         return view('catalog::client.create', compact('client'));
     }
 
-    public function store(ServiceRequest $request, Client $client): RedirectResponse
+    public function store(ServiceRequest $request): RedirectResponse
     {
         $this->authorize('create', Service::class);
+
+        $client = $request->user()->client;
 
         $client->services()->create($request->validated() + ['is_active' => true]);
 
@@ -102,14 +107,16 @@ class ServiceController extends Controller
         // ]);
     }
 
-    public function edit(Client $client, Service $service): View
+    public function edit(Request $request, Service $service): View
     {
         $this->authorize('update', $service);
+
+        $client = $request->user()->client;
 
         return view('catalog::client.edit', compact('client', 'service'));
     }
 
-    public function update(ServiceRequest $request, Client $client, Service $service): RedirectResponse
+    public function update(ServiceRequest $request, Service $service): RedirectResponse
     {
         $this->authorize('update', $service);
 
@@ -126,7 +133,7 @@ class ServiceController extends Controller
             ->with('success', 'Layanan berhasil diperbarui!');
     }
 
-    public function toggleStatus(Client $client, Service $service): RedirectResponse
+    public function toggleStatus(Service $service): RedirectResponse
     {
         $this->authorize('update', $service);
 
@@ -135,7 +142,7 @@ class ServiceController extends Controller
         return back()->with('success', 'Status layanan berhasil diubah!');
     }
 
-    public function destroy(Client $client, Service $service): RedirectResponse
+    public function destroy(Service $service): RedirectResponse
     {
         $this->authorize('delete', $service);
 

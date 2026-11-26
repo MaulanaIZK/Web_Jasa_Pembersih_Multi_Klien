@@ -92,7 +92,7 @@
         </form>
 
         <div class="auth-footer">
-            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a>
+            Sudah memiliki akun? <a href="{{ route('login') }}">Sudah Punya Akun (Masuk)</a><br>Penyedia jasa? <a href="{{ route('register.client') }}">Daftar sebagai Mitra</a>
         </div>
     </div>
 </body>

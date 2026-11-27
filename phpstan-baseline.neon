@@ -103,70 +103,10 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:edit\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:edit\(\) has parameter \$idClient with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminClientController\:\:index\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
-
-		-
-			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminClientController.php
-
-		-
 			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminDashboardController\:\:index\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/Admin/Http/Controllers/AdminDashboardController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:create\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:edit\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:edit\(\) has parameter \$idClient with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:index\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
-
-		-
-			message: '#^Method App\\Modules\\Admin\\Http\\Controllers\\AdminTenantController\:\:store\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
-
-		-
-			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Admin/Http/Controllers/AdminTenantController.php
 
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Sanctum\\PersonalAccessToken\. Use \-\> instead\.$#'
